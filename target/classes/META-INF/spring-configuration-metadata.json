@@ -1,0 +1,18 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "cn.felix.multipledatsource.common.config.DataSourceBConfig",
+      "name": "spring.datasource.b",
+      "sourceMethod": "BDataSource()",
+      "type": "javax.sql.DataSource"
+    },
+    {
+      "sourceType": "cn.felix.multipledatsource.common.config.DataSourceCConfig",
+      "name": "spring.datasource.c",
+      "sourceMethod": "CDataSource()",
+      "type": "javax.sql.DataSource"
+    }
+  ],
+  "properties": []
+}

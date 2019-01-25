@@ -1,0 +1,51 @@
+server:
+  port: 8780
+  servlet:
+    context-path: /multiple-datasources
+
+logging:
+  config: classpath:logback-spring.xml
+log:
+  path: log/${server.port}
+
+
+#mybatis-plus
+mybatis-plus:
+  mapper-locations: classpath:dao/**/*Mapper.xml
+  global-config:
+    db-column-underline: true
+    id-type: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+  type-handlers-package: cn.felix.multipledatsource.handlers
+
+druid:
+  initial-size: 5
+  min-idle: 5
+  max-active: 20
+  max-wait: 60000
+
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/data_a
+#    driverClassName: org.postgresql.Driver
+#    username: postgres
+#    password: postgres
+a:
+  url: jdbc:postgresql://localhost:5432/data_a
+  username: postgres
+  password: postgres
+  driver-class-name: org.postgresql.Driver
+
+b:
+  url: jdbc:mysql://localhost:3307/data_b?characterEncoding=UTF-8
+  username: root
+  password: root
+  driver-class-name: com.mysql.jdbc.Driver
+
+c:
+  url: jdbc:oracle:thin:@192.168.71.133:49161:xe
+  username: rsems
+  password: rsems
+  driver-class-name: oracle.jdbc.driver.OracleDriver
