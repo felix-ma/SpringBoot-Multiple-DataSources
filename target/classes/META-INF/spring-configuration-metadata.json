@@ -2,15 +2,15 @@
   "hints": [],
   "groups": [
     {
-      "sourceType": "cn.felix.multipledatsource.common.config.DataSourceBConfig",
-      "name": "spring.datasource.b",
-      "sourceMethod": "BDataSource()",
+      "sourceType": "cn.felix.multipledatasources.config.MyBatiesPlusConfiguration",
+      "name": "spring.datasource.multiple.db1",
+      "sourceMethod": "db1()",
       "type": "javax.sql.DataSource"
     },
     {
-      "sourceType": "cn.felix.multipledatsource.common.config.DataSourceCConfig",
-      "name": "spring.datasource.c",
-      "sourceMethod": "CDataSource()",
+      "sourceType": "cn.felix.multipledatasources.config.MyBatiesPlusConfiguration",
+      "name": "spring.datasource.multiple.db2",
+      "sourceMethod": "db2()",
       "type": "javax.sql.DataSource"
     }
   ],

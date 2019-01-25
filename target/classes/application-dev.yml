@@ -1,51 +1,78 @@
 server:
-  port: 8780
+  port: 8080
   servlet:
-    context-path: /multiple-datasources
-
-logging:
-  config: classpath:logback-spring.xml
-log:
-  path: log/${server.port}
-
-
-#mybatis-plus
+    context-path: /MulitipleDataSources
 mybatis-plus:
-  mapper-locations: classpath:dao/**/*Mapper.xml
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.seawatebt.ssm.entity
   global-config:
-    db-column-underline: true
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
     id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #mp2.3+ 全局表前缀 mp_
+    #table-prefix: mp_
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    # Sequence序列接口实现类配置
+    key-generator: com.baomidou.mybatisplus.incrementer.OracleKeyGenerator
+    #逻辑删除配置（下面3个配置）
+    logic-delete-value: 4
+    logic-not-delete-value: 0
   configuration:
+    #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
     map-underscore-to-camel-case: true
     cache-enabled: false
-  type-handlers-package: cn.felix.multipledatsource.handlers
+    #配置JdbcTypeForNull, oracle数据库必须配置
+    jdbc-type-for-null: 'null'
+spring:
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,log4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      # 合并多个DruidDataSource的监控数据
+      useGlobalDataSourceStat: true
 
-druid:
-  initial-size: 5
-  min-idle: 5
-  max-active: 20
-  max-wait: 60000
+      # 连接池配置
+      max-active: 20
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
 
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/data_a
-#    driverClassName: org.postgresql.Driver
-#    username: postgres
-#    password: postgres
-a:
-  url: jdbc:postgresql://localhost:5432/data_a
-  username: postgres
-  password: postgres
-  driver-class-name: org.postgresql.Driver
+      #在空闲连接回收器线程运行期间休眠的时间值,以毫秒为单位，一般比minEvictableIdleTimeMillis小
+      time-between-eviction-runs-millis: 60000
+      #连接池中连接，在时间段内一直空闲，被逐出连接池的时间(1000*60*60)，以毫秒为单位
+      min-evictable-idle-time-millis: 300000
 
-b:
-  url: jdbc:mysql://localhost:3307/data_b?characterEncoding=UTF-8
-  username: root
-  password: root
-  driver-class-name: com.mysql.jdbc.Driver
+      # 连接有效性检测
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      validation-query: SELECT 1
 
-c:
-  url: jdbc:oracle:thin:@192.168.71.133:49161:xe
-  username: rsems
-  password: rsems
-  driver-class-name: oracle.jdbc.driver.OracleDriver
+      multiple:
+        db1:
+          username: postgres
+          password: postgres
+          driverClassName: org.postgresql.Driver
+          url: jdbc:postgresql://localhost:5432/data_a
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
+        db2:
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql:///data_b
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
