@@ -2,6 +2,9 @@ server:
   port: 8080
   servlet:
     context-path: /MulitipleDataSources
+logging:
+  config: classpath:logback-spring.xml
+  path: log/${server.port}
 mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml
   #实体扫描，多个package用逗号或者分号分隔
@@ -32,47 +35,47 @@ mybatis-plus:
     jdbc-type-for-null: 'null'
 spring:
   datasource:
-      type: com.alibaba.druid.pool.DruidDataSource
-      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
-      filters: stat,wall,log4j
-      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-      # 合并多个DruidDataSource的监控数据
-      useGlobalDataSourceStat: true
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    # 合并多个DruidDataSource的监控数据
+    useGlobalDataSourceStat: true
 
-      # 连接池配置
-      max-active: 20
-      initial-size: 1
-      max-wait: 60000
-      min-idle: 1
-      pool-prepared-statements: true
-      max-open-prepared-statements: 20
+    # 连接池配置
+    max-active: 20
+    initial-size: 1
+    max-wait: 60000
+    min-idle: 1
+    pool-prepared-statements: true
+    max-open-prepared-statements: 20
 
-      #在空闲连接回收器线程运行期间休眠的时间值,以毫秒为单位，一般比minEvictableIdleTimeMillis小
-      time-between-eviction-runs-millis: 60000
-      #连接池中连接，在时间段内一直空闲，被逐出连接池的时间(1000*60*60)，以毫秒为单位
-      min-evictable-idle-time-millis: 300000
+    #在空闲连接回收器线程运行期间休眠的时间值,以毫秒为单位，一般比minEvictableIdleTimeMillis小
+    time-between-eviction-runs-millis: 60000
+    #连接池中连接，在时间段内一直空闲，被逐出连接池的时间(1000*60*60)，以毫秒为单位
+    min-evictable-idle-time-millis: 300000
 
-      # 连接有效性检测
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      validation-query: SELECT 1
+    # 连接有效性检测
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    validation-query: SELECT 1
 
-      multiple:
-        db1:
-          username: postgres
-          password: postgres
-          driverClassName: org.postgresql.Driver
-          url: jdbc:postgresql://localhost:5432/data_a
-          initialSize: 5
-          minIdle: 5
-          maxActive: 20
-        db2:
-          username: root
-          password: 123456
-          driver-class-name: com.mysql.jdbc.Driver
-          url: jdbc:mysql:///data_b
-          initialSize: 5
-          minIdle: 5
-          maxActive: 20
+    multiple:
+      db1:
+        username: postgres
+        password: postgres
+        driverClassName: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/data_a
+        initialSize: 5
+        minIdle: 5
+        maxActive: 20
+      db2:
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql:///data_b
+        initialSize: 5
+        minIdle: 5
+        maxActive: 20
