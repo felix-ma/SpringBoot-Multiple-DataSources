@@ -12,24 +12,28 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
-*
-* @author felix-ma
-* @create 2019/1/25 14:45
-**/
+ * @author felix-ma
+ * @create 2019/1/25 14:45
+ **/
 @Configuration
 @MapperScan("cn.felix.multipledatasources.mapper*")
 public class MyBatiesPlusConfiguration {
+
+    @Value("${mybatis-plus.mapper-locations}")
+    private String mapperLocation;
 
     /*
      * 分页插件，自动识别数据库类型
@@ -47,7 +51,7 @@ public class MyBatiesPlusConfiguration {
      * SQL执行效率插件
      */
     @Bean
-    @Profile({"dev","test"})// 设置 dev test 环境开启
+    @Profile({"dev", "test"})// 设置 dev test 环境开启
     public PerformanceInterceptor performanceInterceptor() {
         PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
         performanceInterceptor.setMaxTime(1000);
@@ -56,26 +60,27 @@ public class MyBatiesPlusConfiguration {
     }
 
     @Bean(name = "db1")
-    @ConfigurationProperties(prefix = "spring.datasource.multiple.db1" )
+    @ConfigurationProperties(prefix = "spring.datasource.multiple.db1")
     public DataSource db1() {
         return DruidDataSourceBuilder.create().build();
     }
 
     @Bean(name = "db2")
-    @ConfigurationProperties(prefix = "spring.datasource.multiple.db2" )
+    @ConfigurationProperties(prefix = "spring.datasource.multiple.db2")
     public DataSource db2() {
         return DruidDataSourceBuilder.create().build();
     }
 
     /**
      * 动态数据源配置
+     *
      * @return
      */
     @Bean
     @Primary
     public DataSource multipleDataSource(@Qualifier("db1") DataSource db1, @Qualifier("db2") DataSource db2) {
         MultipleDataSource multipleDataSource = new MultipleDataSource();
-        Map< Object, Object > targetDataSources = new HashMap<>();
+        Map<Object, Object> targetDataSources = new HashMap<>();
         targetDataSources.put(DataSourceEnum.DB1.getValue(), db1);
         targetDataSources.put(DataSourceEnum.DB2.getValue(), db2);
         //添加数据源
@@ -88,7 +93,7 @@ public class MyBatiesPlusConfiguration {
     @Bean("sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(multipleDataSource(db1(),db2()));
+        sqlSessionFactory.setDataSource(multipleDataSource(db1(), db2()));
         //sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:/mapper/*/*Mapper.xml"));
 
         MybatisConfiguration configuration = new MybatisConfiguration();
@@ -100,6 +105,10 @@ public class MyBatiesPlusConfiguration {
         sqlSessionFactory.setPlugins(new Interceptor[]{ //PerformanceInterceptor(),OptimisticLockerInterceptor()
                 paginationInterceptor() //添加分页功能
         });
+
+        //自定义的mapper扫描
+        sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
+                .getResources(mapperLocation));
         //sqlSessionFactory.setGlobalConfig(globalConfiguration());
         return sqlSessionFactory.getObject();
     }
